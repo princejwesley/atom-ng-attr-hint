@@ -6,3 +6,29 @@
 
 .atom-ng-attr-hint {
 }
+
+atom-text-editor::shadow {
+	.nghint-warning {
+		background-color: fade(@background-color-warning, 40%);
+	}
+	.nghint-info {
+		background-color: fade(@background-color-info, 40%);
+	}
+
+	.gutter {
+		.nghint-line-number .nghint-info {
+			color: @text-color-info !important;
+		}
+
+		.nghint-line-number .nghint-warning {
+			color: @text-color-warning !important;
+		}
+
+		.nghint-line-number {
+			&:hover {
+				background-color: @background-color-highlight;
+			}
+		}
+	}
+
+}

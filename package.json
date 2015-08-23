@@ -1,18 +1,28 @@
 {
   "name": "atom-ng-attr-hint",
   "main": "./lib/atom-ng-attr-hint",
-  "version": "0.0.0",
-  "description": "A short description of your package",
+  "version": "0.1.0",
+  "description": "Atom for ng-attr-hint (A static linting tool for angular ng directives).",
+  "author": {
+    "name": "Prince John Wesley",
+    "email": "princejohhwesley@gmail.com",
+    "url": "www.toolitup.com"
+  },
   "keywords": [
+    "angular",
+    "angular-directive",
+    "ng-attr-hint",
+    "hint"
   ],
   "activationCommands": {
     "atom-workspace": "atom-ng-attr-hint:toggle"
   },
-  "repository": "https://github.com/atom/atom-ng-attr-hint",
+  "repository": "https://github.com/princejwesley/atom-ng-attr-hint",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "ng-attr-hint": "^0.3.4"
   }
 }
