@@ -23,7 +23,6 @@ class AtomNgAttrHintView
     hint.appendChild(icon)
     hint.appendChild(content)
 
-    console.log('target', target)
     tooltip = atom.tooltips.add(target, {
       title: hint
       placement: 'bottom'
@@ -36,7 +35,6 @@ class AtomNgAttrHintView
     atom.notifications.addError err
 
   destroyId: (id) ->
-    console.log('destroy id', id)
     return unless @view[id]
     container = @view[id]
     markers = container.markers
@@ -50,7 +48,6 @@ class AtomNgAttrHintView
   toggle: ->
     return unless editor = atom.workspace.getActiveTextEditor()
 
-    console.log('id', editor.id)
     id = editor.id
     if @view[id]?.toggle
       @destroyId(editor.id);
@@ -63,36 +60,37 @@ class AtomNgAttrHintView
 
   # Tear down any state and detach
   destroy: ->
-    console.log('destroy')
     Object.keys(@view).forEach (key) ->
       @destroyId(key)
 
   hint: (warnings) ->
-    console.log('hint')
+
     return unless editor = atom.workspace.getActiveTextEditor()
     {that, id} = this
-    console.log('that', that, 'id', id)
-    console.log warnings
     that.view[id].markers ?= {}
     that.view[id].tooltips ?= new CompositeDisposable()
     that.view[id].gutter = editor.gutterContainer.addGutter
       name: 'nghint-gutter'
-      priority: 0
+      priority: -1
       visible: true
 
     warnings.forEach (warn) =>
       {message, type, line} = warn
-      console.log(message, type,line)
       row = +line - 1
       clazz = type
       clazz = 'alert' if type is 'warning'
 
       item = document.createElement('div')
       item.className = 'nghint-icon'
-      item.textContent = '💡'
+      item.textContent = '💡 '
 
       marker = editor.markBufferRange([[row, 0], [row, 1]])
       editor.decorateMarker(marker, {type: 'line', class: "nghint-line"})
-      editor.decorateMarker(marker, {type: 'gutter', gutterName: 'nghint-gutter', class: "nghint-line-number-#{row}", item: item})
+      editor.decorateMarker(marker, {
+        type: 'gutter'
+        gutterName: 'nghint-gutter'
+        class: "nghint-line-number-#{row}"
+        item: item
+      })
       that.view[id].markers[row] = marker
       setTimeout (-> that.tooltipHint(id, message, type, row)), 100
