@@ -7,14 +7,10 @@ class AtomNgAttrHintView
   view: {}
   constructor: () ->
 
-  #TODO status bar
-
   tooltipHint: (id, message, type, row) ->
-    console.log('tooltip selector', ".nghint-line-number.line-number-#{row}" )
-
     editor = atom.workspace.getActiveTextEditor()
     element = atom.views.getView(editor)
-    target = element.shadowRoot.querySelectorAll(".nghint-line-number.line-number-#{row}")
+    target = element.shadowRoot.querySelectorAll(".nghint-line-number-#{row}")
     hint = document.createElement('div')
     hint.classList.add('nghint-tooltip')
     icon = document.createElement('i')
@@ -26,6 +22,7 @@ class AtomNgAttrHintView
     content.textContent = message
     hint.appendChild(icon)
     hint.appendChild(content)
+
     console.log('target', target)
     tooltip = atom.tooltips.add(target, {
       title: hint
@@ -41,11 +38,13 @@ class AtomNgAttrHintView
   destroyId: (id) ->
     console.log('destroy id', id)
     return unless @view[id]
-    markers = @view[id].markers
+    container = @view[id]
+    markers = container.markers
     if markers
       Object.keys(markers).forEach (key) ->
         markers[key].destroy()
-    @view[id].tooltips?.dispose()
+    container.tooltips?.dispose()
+    container.gutter?.destroy()
     @view[id] = {}
 
   toggle: ->
@@ -76,12 +75,24 @@ class AtomNgAttrHintView
     console.log warnings
     that.view[id].markers ?= {}
     that.view[id].tooltips ?= new CompositeDisposable()
+    that.view[id].gutter = editor.gutterContainer.addGutter
+      name: 'nghint-gutter'
+      priority: 0
+      visible: true
+
     warnings.forEach (warn) =>
       {message, type, line} = warn
       console.log(message, type,line)
       row = +line - 1
+      clazz = type
+      clazz = 'alert' if type is 'warning'
+
+      item = document.createElement('div')
+      item.className = 'nghint-icon'
+      item.textContent = '💡'
+
       marker = editor.markBufferRange([[row, 0], [row, 1]])
       editor.decorateMarker(marker, {type: 'line', class: "nghint-line"})
-      editor.decorateMarker(marker, {type: 'line-number', class: "nghint-line-number"})
+      editor.decorateMarker(marker, {type: 'gutter', gutterName: 'nghint-gutter', class: "nghint-line-number-#{row}", item: item})
       that.view[id].markers[row] = marker
       setTimeout (-> that.tooltipHint(id, message, type, row)), 100
