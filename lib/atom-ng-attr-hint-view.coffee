@@ -9,27 +9,24 @@ class AtomNgAttrHintView
     statusBar = atom.views.getView(atom.workspace).querySelector '.status-bar'
     @statusBarElement = document.createElement('span')
     @statusBarElement.setAttribute('id', 'nghint-statusbar')
-    @statusBarElement.style['display'] = 'inline-block'
+    @statusBarElement.className = 'inline-block'
     statusBar.addLeftTile({item: @statusBarElement})
-    console.log(atom.workspace.onDidChangeActivePaneItem)
     atom.workspace.onDidChangeActivePaneItem => @updateStatusBar()
 
-
   updateStatusBar: ->
-    console.log('update statusBar', this)
     return unless @statusBarElement
     @statusBarElement.textContent = ''
 
-    editor = atom.workspace.getActiveTextEditor()
+    return unless editor = atom.workspace.getActiveTextEditor()
     row = editor.getCursorBufferPosition().row
-    console.log('row', row, @view[editor.id])
-    if @view[editor.id]?.errors[row]
+    if @view?[editor.id]?.errors?[row]
       @statusBarElement.textContent = @view[editor.id].errors[row]
 
   updateHint: ->
-    console.log('update hint', this)
-    if @view[id]?.toggle
-      @load id
+    return unless editor = atom.workspace.getActiveTextEditor()
+    if @view[editor.id]?.toggle
+      @destroyId editor.id
+      @load editor.id
 
   tooltipHint: (id, message, type, row) ->
     editor = atom.workspace.getActiveTextEditor()
@@ -78,19 +75,19 @@ class AtomNgAttrHintView
     return unless editor = atom.workspace.getActiveTextEditor()
     id = editor.id
     if @view[id]?.toggle
-      @destroyId(editor.id);
+      @destroyId id
     else
-      @view[id] ?= { toggle: false }
-      @view[id].toggle = true;
       @load id
-      buffer = editor.getBuffer()
-      @view[id].statusBarCallback = () => @updateStatusBar()
-      @view[id].updateHintCallback = () => @updateHint()
-      editor.onDidChangeCursorPosition @view[id].statusBarCallback
-      editor.onDidSave @view[id].updateHintCallback
-
 
   load: (id) ->
+    return unless editor = atom.workspace.getActiveTextEditor()
+    @view[id] ?= { toggle: false }
+    @view[id].toggle = true;
+    buffer = editor.getBuffer()
+    @view[id].statusBarCallback = () => @updateStatusBar()
+    @view[id].updateHintCallback = () => @updateHint()
+    editor.onDidChangeCursorPosition @view[id].statusBarCallback
+    editor.onDidSave @view[id].updateHintCallback
     pane = atom.workspace.getActivePaneItem()
     hintPromise = ngHint(data: pane.buffer.lines.join('\n'))
     hintPromise.then @$$hint.bind({ that: this, id: id }), @onError
@@ -108,10 +105,11 @@ class AtomNgAttrHintView
     that.view[id].markers ?= {}
     that.view[id].errors ?= {}
     that.view[id].tooltips ?= new CompositeDisposable()
-    that.view[id].gutter = editor.gutterContainer.addGutter
-      name: 'nghint-gutter'
-      priority: -100
-      visible: true
+    if warnings?.length > 0 and editor.gutterContainer.gutterName isnt 'nghint-gutter'
+      that.view[id].gutter = editor.gutterContainer.addGutter
+        name: 'nghint-gutter'
+        priority: -100
+        visible: true
 
     warnings.forEach (warn) =>
       {message, type, line} = warn
