@@ -4,27 +4,30 @@
 // for a full listing of what's available.
 @import "ui-variables";
 
-.atom-ng-attr-hint {
+.tooltip {
+	.nghint-tooltip {
+		.icon-alert {
+			color: @text-color-error;
+		}
+		.icon-info {
+			color: @text-color-info;
+		}
+		.nghint-content {
+
+		}
+	}
 }
 
 atom-text-editor::shadow {
-	.nghint-warning {
-		background-color: fade(@background-color-warning, 40%);
-	}
-	.nghint-info {
-		background-color: fade(@background-color-info, 40%);
+
+	.nghint-line {
+		background-color: fade(@background-color-error, 40%);
 	}
 
 	.gutter {
-		.nghint-line-number .nghint-info {
-			color: @text-color-info !important;
-		}
-
-		.nghint-line-number .nghint-warning {
-			color: @text-color-warning !important;
-		}
-
 		.nghint-line-number {
+			background-color: fade(@background-color-error, 40%);
+			color: @text-color-error !important;
 			&:hover {
 				background-color: @background-color-highlight;
 			}
