@@ -1,7 +1,7 @@
 {
   "name": "atom-ng-attr-hint",
   "main": "./lib/atom-ng-attr-hint",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Atom package for ng-attr-hint (A static lint tool for angular ng directives).",
   "author": {
     "name": "Prince John Wesley",
