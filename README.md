@@ -1,4 +1,5 @@
 # atom-ng-attr-hint package
+[![apm](https://img.shields.io/apm/dm/atom-ng-attr-hint.png)](https://atom.io/packages/atom-ng-attr-hint)
 
 Atom package for ng-attr-hint (A static lint tool for angular ng directives).
 
